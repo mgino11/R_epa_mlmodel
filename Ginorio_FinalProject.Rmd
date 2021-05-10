@@ -1,0 +1,191 @@
+---
+title: ""
+author: "MGinorio"
+date: "`r format(Sys.Date(), '%B %d %Y')`"
+output:
+  html_document:
+    highlight: pygments
+    theme: sandstone
+    toc: true
+    toc_float: true
+  prettydoc::html_pretty:
+    theme: cayman
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### EPA Public Api / VM Model
+##### Overview
+### {.tabset .tabset-pills}
+
+#### Overview
+
+Envirofacts has developed a RESTful data service API to all of its internal data holdings. This functionality provides a user of Envirofacts with the ability to query any table through the use of a URL. The default output is in XML, which can be utilized in other applications, as well as tools such as Microsoft Excel or Access. Output options of CSV and Excel can be requested in the URL. The entire Envirofacts database metadata is available online, so that all tables and columns within Envirofacts are documented. Having the table structures available in this manner makes most of Envirofacts data easily available through the service. 
+
+
+#### Packages
+
+```{r packages, message=FALSE, warning=FALSE, eval=FALSE}
+
+library(plyr)
+library(knitr)
+library(readr)
+library(tidyverse)
+library(tidymodels)
+library(DT)
+library(dplyr)
+library(textrecipes)
+library(ggplot2)
+library(lubridate)
+set.seed(1234)
+
+```
+
+
+#### Data
+
+1.- Dataset # 1 - Using API
+
+Safe Drinking Water Information System (SDWIS)
+
+![](Images/sdwis.PNG)
+
+```{r load data 1, warning=FALSE}
+# EPA API
+
+URL <- ("https://data.epa.gov/efservice/VIOLATION/CSV")
+
+water_api <- read_csv(URL)
+
+```
+
+
+2.- Dataset # 2 - Csv 
+
+National Contaminant Occurrence Database (NCOD)
+
+EPA developed the National Contaminant Occurrence Database (NCOD) to satisfy statutory requirements in the 1996 Amendments to the Safe Drinking Water Act (SDWA). 
+
+The 1996 Amendments require EPA to assemble and maintain a national drinking water contaminant occurrence database using information for both regulated and unregulated contaminants in public water systems.
+
+
+```{r load data 2}
+library(readr)
+
+water_data <- read_delim("data/UCMR4_All_MA_WY.txt", 
+    "\t", escape_double = FALSE, locale = locale(encoding = "Latin1"), 
+    trim_ws = TRUE)
+names(water_data)
+```
+
+#### ContaminantS
+
+**Definition**
+
+The Safe Drinking Water Act (SDWA) defines "contaminant" as any physical, chemical, biological or radiological substance or matter in water. Drinking water may reasonably be expected to contain at least small amounts of some contaminants. Some contaminants may be harmful if consumed at certain levels in drinking water. The presence of contaminants does not necessarily indicate that the water poses a health risk.
+
+```{r glimpse data, warning=FALSE, message=FALSE}
+library(dplyr)
+glimpse()
+```
+
+
+#### Tidy Data
+
+
+
+```{r tidy data}
+
+# lets take a look at the data 
+
+
+
+```
+
+```{r consumer narrative tidy, warning=FALSE}
+library(stringr)
+
+```
+
+
+#### Model
+
+
+```{r levels, warning=FALSE, message=FALSE}
+
+```
+
+```{r train}
+
+```
+
+```{r test}
+
+```
+
+**Recipes Package**
+
+Recipes allows to create a specification of preprocessing steps we want to perform.
+
+```{r recipes}
+
+
+```
+
+**Text Recipes**
+
+
+
+```{r tokenize,  warning=FALSE}
+
+library(textrecipes)
+```
+
+```{r workflow}
+
+```
+
+```{r discrim, warning=FALSE, message=FALSE}
+
+library(discrim)
+
+```
+
+#### Evaluation
+
+
+```{r}
+
+```
+
+**resampling estimates of performance**
+
+```{r resampling estimates}
+
+
+```
+
+```{r model fitting, eval=FALSE}
+
+library(naivebayes)
+
+```
+
+```{r collect metrics, eval=FALSE}
+
+```
+
+```{r performance metrics, eval=FALSE}
+
+```
+
+```{r, eval=FALSE}
+
+```
+

@@ -1,0 +1,54 @@
+---
+title: "Final Project Preliminary"
+author: "MGinorio"
+date: "4/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## EPA datasets
+
+```{r pckg, message=FALSE, warning=FALSE}
+library(readr)
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(XML)
+library(rvest)
+```
+
+
+## EPA Water API
+
+Envirofacts has developed a RESTful data service API to all of its internal data holdings. This functionality provides a user of Envirofacts with the ability to query any table through the use of a URL. The default output is in XML, which can be utilized in other applications, as well as tools such as Microsoft Excel or Access. Output options of CSV and Excel can be requested in the URL. The entire Envirofacts database metadata is available online, so that all tables and columns within Envirofacts are documented. Having the table structures available in this manner makes most of Envirofacts data easily available through the service. 
+
+```{r api data extraction}
+
+URL <- ("https://data.epa.gov/efservice/VIOLATION/CSV")
+
+water_api <- read_csv(URL)
+
+
+
+```
+
+## Drinking Water Regulations
+
+What Are Chronic Contaminants?
+Drinking water contaminants that can cause health effects after continuous long-term exposure at
+levels greater than the maximum contaminant level (MCL) are considered “chronic” contaminants.
+Examples of chronic drinking water contaminants regulated by EPA include inorganic
+contaminants like arsenic, cadmium, and copper; organic contaminants such as pesticides and
+industrial chemicals; and radiological contaminants like radium and uranium. 
+
+In contrast, “acute” contaminants can cause short-term health effects within hours or days
+of exposure. Microbes such as E. coli and Cryptosporidium are examples of contaminants
+that can cause an acute health risk. Some chronic-type contaminants can also fall in this
+category if they are present at high enough concentrations to cause immediate health effects.
+For example, nitrate levels over the MCL can cause “blue-baby” syndrome in children less
+than 6 months
+

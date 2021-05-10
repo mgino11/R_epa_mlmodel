@@ -1,0 +1,155 @@
+---
+title: "Ginorio_Proposal"
+author: "MGinorio"
+date: "4/20/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Data Preparation
+
+```{r data, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+
+```
+
+```{r}
+
+water_data <- read_delim("data/UCMR4_All_MA_WY.txt", 
+    "\t", escape_double = FALSE, locale = locale(encoding = "Latin1"), 
+    trim_ws = TRUE)
+names(water_data)
+
+```
+```{r epa water}
+epa_water <- water_data %>% 
+  select(PWSName,
+         Size,
+         FacilityName,
+         FacilityWaterType,
+         CollectionDate,
+         Contaminant,
+         MRL,
+         Result = AnalyticalResultsSign,
+         Result_value = `AnalyticalResultValue(µg/L)`,
+         State)
+  
+
+```
+
+```{r epa water tidy}
+
+epa_water <- epa_water %>% 
+  mutate(Result = replace(Result, Result == "=", TRUE),
+         Date = mdy(CollectionDate),
+         CollectionDate = NULL) %>% 
+  mutate(MRL = as.numeric(MRL))
+
+```
+
+```{r}
+
+
+
+```
+
+### Research question 
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+I would like to know, for a specific city and state, the violations and enforcement actions, as well as the definitions, health effects, and sources of contamination for any contaminants.
+
+
+### Cases 
+
+**What are the cases, and how many are there?**
+
+States with contaminant violations in each water treatment facility - 502,043 entries, 10 total columns
+
+
+### Data collection 
+
+**Describe the method of data collection.**
+
+The motivation for this project is to understand our Drinking Water Requirements for States and Public Water Systems by analyzing the data provided by the United States Environmental Protection Agency EPA.
+When public water systems are found to contain contaminants in amounts exceeding the Maximum Contamination Limit MCL, they are in violation and must take action to restore the quality of their water. Utilizing the Envirofacts REST API, the SDWIS information can be queried and retrieved from the SDWIS database.
+
+
+### Type of study 
+
+**What type of study is this (observational/experiment)?**
+
+Observational
+
+
+### Data Source 
+
+**If you collected the data, state self-collected. If not, provide a citation/link.**
+
+[EPA REST API](https://www.epa.gov/enviro/web-services)
+[National Contaminant Occurrence Database (NCOD)](https://www.epa.gov/sdwa/national-contaminant-occurrence-database-ncod)
+
+
+### Dependent Variable
+
+**What is the response variable? Is it quantitative or qualitative?**
+
+MRL -> Minimum Reporting Level
+
+### Independent Variable
+
+**You should have two independent variables, one quantitative and one qualitative.**
+
+Result_Value -> Quatitative
+States -> Qualitative
+Contaminant -> Qualitative
+
+
+### Relevant summary statistics 
+
+**Provide summary statistics for each the variables. Also include appropriate visualizations related to your research question (e.g. scatter plot, boxplots, etc). This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+```{r}
+summary(epa_water)
+```
+```{r}
+hist(log(epa_water$MRL))
+```
+```{r}
+hist(log(epa_water$Result_value))
+```
+```{r}
+boxplot(epa_water$Result_value ~ epa_water$State)
+```
+```{r relationship numeric variables}
+# MRL independent Variable (x)
+# Result_Value dependent variable (y)
+
+plot(log(epa_water$Result_value) ~ log(epa_water$MRL))
+```
+
+```{r}
+ggplot(epa_water) +
+ aes(x = State, fill = Contaminant) +
+ geom_bar() +
+ scale_fill_hue(direction = 1) +
+ coord_flip() +
+ theme_minimal()
+```
+```{r freq state mrl}
+epa_water %>% 
+  group_by(State, MRL, Contaminant) %>% 
+  summarise(n = n()) %>% 
+  mutate(freq = n / sum(n)) %>% 
+  arrange(desc(n))
+```
+
