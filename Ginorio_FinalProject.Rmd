@@ -20,8 +20,8 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### EPA Public Api / VM Model
-##### Overview
+### Drinking Water 
+#### Overview
 ### {.tabset .tabset-pills}
 
 #### Overview
@@ -31,7 +31,7 @@ Envirofacts has developed a RESTful data service API to all of its internal data
 
 #### Packages
 
-```{r packages, message=FALSE, warning=FALSE, eval=FALSE}
+```{r packages, message=FALSE, warning=FALSE}
 
 library(plyr)
 library(knitr)
@@ -50,23 +50,28 @@ set.seed(1234)
 
 #### Data
 
-1.- Dataset # 1 - Using API
+**Dataset # 1 - Using API**
 
 Safe Drinking Water Information System (SDWIS)
 
-![](Images/sdwis.PNG)
+![](Images/Drinking_water.png)
 
 ```{r load data 1, warning=FALSE}
 # EPA API
+#change import way
 
-URL <- ("https://data.epa.gov/efservice/VIOLATION/CSV")
+#URL <- ("https://data.epa.gov/efservice/VIOLATION/CSV")
 
-water_api <- read_csv(URL)
+library(readr)
+
+api_data <- read_csv("data/EnvirofactsRestAP_violations.csv")
+
+
 
 ```
 
 
-2.- Dataset # 2 - Csv 
+**Dataset # 2 - Csv** 
 
 National Contaminant Occurrence Database (NCOD)
 
@@ -74,6 +79,7 @@ EPA developed the National Contaminant Occurrence Database (NCOD) to satisfy sta
 
 The 1996 Amendments require EPA to assemble and maintain a national drinking water contaminant occurrence database using information for both regulated and unregulated contaminants in public water systems.
 
+![](Images/water-testing-1020x510.jpg)
 
 ```{r load data 2}
 library(readr)
@@ -84,7 +90,95 @@ water_data <- read_delim("data/UCMR4_All_MA_WY.txt",
 names(water_data)
 ```
 
-#### ContaminantS
+#### Tidy Data
+
+**Dataset 1 - APi Data**
+
+```{r api water}
+library(dplyr)
+
+api_water <- api_data %>% 
+  select(Facility_name = VIOLATION.PWSID,
+         Pop_served = VIOLATION.POPULATION_SERVED_COUNT,
+         State = VIOLATION.PRIMACY_AGENCY_CODE,
+         Health = VIOLATION.IS_HEALTH_BASED_IND,
+         Contaminant = VIOLATION.CONTAMINANT_CODE,
+         Result_value = VIOLATION.VIOL_MEASURE,
+         State_MCL = VIOLATION.STATE_MCL)
+```
+
+```{r api clean}
+
+library(tidyr)
+api_clean <- api_water %>% 
+  drop_na()
+
+```
+
+```{r clean skim, warning=FALSE}
+library(skimr)
+library(ggplot2)
+
+ api_clean %>% skim()
+ 
+ economics_long %>% group_by() %>% skim()
+```
+
+```{r num skim}
+api_clean %>% 
+  select_if(is.numeric) %>% 
+  skim()
+```
+
+
+**Dataset 2 - Epa Water**
+
+```{r epa water}
+epa_water <- water_data %>% 
+  select(PWSName,
+         Size,
+         FacilityName,
+         FacilityWaterType,
+         CollectionDate,
+         Contaminant,
+         MRL,
+         Result = AnalyticalResultsSign,
+         Result_value = `AnalyticalResultValue(µg/L)`,
+         State)
+  
+```
+
+```{r epa water tidy}
+
+library(plyr)
+
+epa_water <- epa_water %>% 
+  mutate(Result = replace(Result, Result == "=", TRUE),
+         Date = mdy(CollectionDate),
+         CollectionDate = NULL) %>% 
+  mutate(MRL = as.numeric(MRL))
+
+```
+
+```{r epa clean}
+library(tidyr)
+epa_clean <- epa_water %>% 
+  drop_na()
+```
+
+
+```{r}
+epa_water %>% 
+  select_if(is.numeric) %>% 
+  skim()
+```
+
+
+
+#### Research Question
+
+
+#### Contaminants
 
 **Definition**
 
@@ -92,7 +186,7 @@ The Safe Drinking Water Act (SDWA) defines "contaminant" as any physical, chemic
 
 ```{r glimpse data, warning=FALSE, message=FALSE}
 library(dplyr)
-glimpse()
+
 ```
 
 
