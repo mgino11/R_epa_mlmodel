@@ -6,8 +6,8 @@ output:
   html_document:
     highlight: pygments
     theme: sandstone
-    toc: true
-    toc_float: true
+    toc: false
+    toc_float: false
   prettydoc::html_pretty:
     theme: cayman
   pdf_document: default
@@ -20,16 +20,40 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Drinking Water 
-#### Overview
-### {.tabset .tabset-pills}
+## Quality of Drinking Water 
+## Overview{.tabset .tabset-pills}
+### Overview
 
-#### Overview
+**ENVIROFACTS EPA Public API to obtain data**
+Envirofacts has developed a RESTful data service API to all of its internal data holdings. This functionality provides a user of Envirofacts with the ability to query any table through the use of a URL. The default output is in XML, which can be utilized in other applications, as well as tools such as Microsoft Excel or Access. 
 
-Envirofacts has developed a RESTful data service API to all of its internal data holdings. This functionality provides a user of Envirofacts with the ability to query any table through the use of a URL. The default output is in XML, which can be utilized in other applications, as well as tools such as Microsoft Excel or Access. Output options of CSV and Excel can be requested in the URL. The entire Envirofacts database metadata is available online, so that all tables and columns within Envirofacts are documented. Having the table structures available in this manner makes most of Envirofacts data easily available through the service. 
+![EPA](images/Drinking_water.png)
+
+**SDWIS - Safe Drinking Water Information System**
+
+Information about safe drinking water is stored in SDWIS, the EPA's Safe Drinking Water Information System. SDWIS tracks information on drinking water contamination levels as required by the 1974 Safe Drinking Water Act and its 1986 and 1996 amendments. The Safe Drinking Water Act (SDWA) and accompanying regulations establish Maximum Contaminant Levels (MCLs), treatment techniques, and monitoring and reporting requirements to ensure that water provided to customers is safe for human consumption. The Safe Drinking Water Information System (SDWIS) contains information about public water systems and their violations of EPA's drinking water regulations. Searching SDWIS will allow you to locate your drinking water supplier and view its violations and enforcement history for the last ten years.
+
+![](images/sdwis.PNG)
+
+**UCMR - Unregulated Contaminant Monitoring Rule**
+
+EPA collects data for chemicals and microbes that may be present in drinking water, but are not currently subject to EPA drinking water regulations.
+
+The UCMR program was developed in coordination with the Contaminant Candidate List (CCL) a list of contaminants that:
+
+Are not regulated by the National Primary Drinking Water Regulations
+Are known or anticipated to occur at public water systems
+May warrant regulation under the SDWA
+
+What are the public health benefits of UCMR?
+This permits assessment of the population being exposed and the levels of exposure.
+
+UCMR data represent one of the primary sources of national occurrence data in drinking water that EPA uses to inform regulatory and other risk management decisions for drinking water contaminant candidates.
+
+![](images/UCMR.PNG)
 
 
-#### Packages
+### Packages
 
 ```{r packages, message=FALSE, warning=FALSE}
 
@@ -47,8 +71,10 @@ set.seed(1234)
 
 ```
 
+### Data
+#### {.tabset}
+##### API_data
 
-#### Data
 
 **Dataset # 1 - Using API**
 
@@ -56,7 +82,7 @@ Safe Drinking Water Information System (SDWIS)
 
 ![](Images/Drinking_water.png)
 
-```{r load data 1, warning=FALSE}
+```{r load data 1, warning=FALSE, eval=FALSE}
 # EPA API
 #change import way
 
@@ -70,6 +96,7 @@ api_data <- read_csv("data/EnvirofactsRestAP_violations.csv")
 
 ```
 
+##### EPA_data
 
 **Dataset # 2 - Csv** 
 
@@ -81,7 +108,7 @@ The 1996 Amendments require EPA to assemble and maintain a national drinking wat
 
 ![](Images/water-testing-1020x510.jpg)
 
-```{r load data 2}
+```{r load data 2, eval=FALSE}
 library(readr)
 
 water_data <- read_delim("data/UCMR4_All_MA_WY.txt", 
@@ -90,11 +117,11 @@ water_data <- read_delim("data/UCMR4_All_MA_WY.txt",
 names(water_data)
 ```
 
-#### Tidy Data
+##### Exploratory Analysis
 
 **Dataset 1 - APi Data**
 
-```{r api water}
+```{r api water, eval=FALSE}
 library(dplyr)
 
 api_water <- api_data %>% 
@@ -107,7 +134,7 @@ api_water <- api_data %>%
          State_MCL = VIOLATION.STATE_MCL)
 ```
 
-```{r api clean}
+```{r api clean, eval=FALSE}
 
 library(tidyr)
 api_clean <- api_water %>% 
@@ -115,25 +142,33 @@ api_clean <- api_water %>%
 
 ```
 
+```{r write csv, echo=FALSE, message=FALSE, eval=FALSE}
+library(readr)
+
+write_csv(api_clean,"api_clean.csv", col_names = TRUE)
+```
+
+```{r, echo=FALSE, message=FALSE,warning=FALSE}
+
+library(readr)
+
+api_clean2 <- read_csv("api_clean2.csv")
+
+```
+
 ```{r clean skim, warning=FALSE}
 library(skimr)
 library(ggplot2)
 
- api_clean %>% skim()
+ api_clean2 %>% skim()
  
- economics_long %>% group_by() %>% skim()
 ```
 
-```{r num skim}
-api_clean %>% 
-  select_if(is.numeric) %>% 
-  skim()
-```
 
 
 **Dataset 2 - Epa Water**
 
-```{r epa water}
+```{r epa water, eval=FALSE}
 epa_water <- water_data %>% 
   select(PWSName,
          Size,
@@ -148,9 +183,10 @@ epa_water <- water_data %>%
   
 ```
 
-```{r epa water tidy}
+```{r epa water tidy, eval= FALSE, message=FALSE, warning=FALSE}
 
 library(plyr)
+library(lubridate)
 
 epa_water <- epa_water %>% 
   mutate(Result = replace(Result, Result == "=", TRUE),
@@ -160,41 +196,133 @@ epa_water <- epa_water %>%
 
 ```
 
-```{r epa clean}
+```{r epa clean, eval=FALSE}
+
 library(tidyr)
+
 epa_clean <- epa_water %>% 
   drop_na()
 ```
 
+```{r epa write csv, echo=FALSE, message=FALSE, eval=FALSE}
+library(readr)
 
+write_csv(epa_clean,"epa_clean.csv", col_names = TRUE)
+
+```
 ```{r}
-epa_water %>% 
-  select_if(is.numeric) %>% 
-  skim()
+
+epa_clean <- read_csv("epa_clean.csv")
 ```
 
+```{r, echo=FALSE, eval=FALSE}
 
+library(lubridate)
 
-#### Research Question
+epa_clean <- epa_clean %>% 
+  mutate(Date = ymd(Date))
 
+```
 
-#### Contaminants
+```{r}
+
+```
+
+##### Relationships
+
+Correlation is a measure of the relationship or interdependence of two variables. In other words, how much do the values of one variable change with the values of another. Correlation can be either positive or negative and it ranges from -1 to 1, with 1 and -1 indicating perfect correlation (1 being positive and -1 being negative) and 0 indicating no correlation.
+
+**Dataset 1 - APi Data**
+
+```{r analytics, warning=FALSE, message=FALSE}
+
+library(PerformanceAnalytics)
+
+api_clean2 %>% 
+  select_if(is.numeric) %>% 
+  chart.Correlation()
+
+```
+
+```{r ggally, warning=FALSE,message=FALSE}
+
+library(GGally)
+
+api_clean2 %>% 
+  select_if(is.numeric) %>% 
+  ggcorr(label = TRUE)
+
+```
+
+```{r}
+library(GGally)
+
+api_clean2 %>% 
+  select_if(is.numeric) %>% 
+  ggpairs()
+```
+
+**Dataset 2 - APi Data**
+
+```{r analytics2, warning=FALSE, message=FALSE}
+
+library(PerformanceAnalytics)
+
+epa_clean %>% 
+  select_if(is.numeric) %>% 
+  chart.Correlation()
+
+```
+
+```{r ggally2, warning=FALSE,message=FALSE}
+
+library(GGally)
+
+epa_clean %>% 
+  select_if(is.numeric) %>% 
+  ggcorr(label = TRUE)
+
+```
+
+```{r}
+library(GGally)
+
+epa_clean %>% 
+  select_if(is.numeric) %>% 
+  ggpairs()
+```
+
+##### Contaminants
 
 **Definition**
 
 The Safe Drinking Water Act (SDWA) defines "contaminant" as any physical, chemical, biological or radiological substance or matter in water. Drinking water may reasonably be expected to contain at least small amounts of some contaminants. Some contaminants may be harmful if consumed at certain levels in drinking water. The presence of contaminants does not necessarily indicate that the water poses a health risk.
 
-```{r glimpse data, warning=FALSE, message=FALSE}
-library(dplyr)
+```{r contaminants}
+
 
 ```
 
 
-#### Tidy Data
+
+```{r, message=FALSE, warning=FALSE}
+ggplot(epa_clean) +
+ aes(x = Date, fill = Contaminant) +
+ geom_histogram(bins = 30L) +
+ scale_fill_hue(direction = 1) +
+ labs(subtitle = "Contaminants per State") +
+ theme_minimal() +
+ facet_wrap(vars(State))
+```
 
 
+[](images/Contaminants_states.png)
 
-```{r tidy data}
+
+##### Research Question
+
+
+```{r research}
 
 # lets take a look at the data 
 
@@ -202,8 +330,18 @@ library(dplyr)
 
 ```
 
-```{r consumer narrative tidy, warning=FALSE}
-library(stringr)
+```{r research2}
+
+
+```
+
+#### {-}
+
+### Inference
+
+
+```{r inference}
+library(dplyr)
 
 ```
 
@@ -251,7 +389,7 @@ library(discrim)
 
 ```
 
-#### Evaluation
+#### Conclusion
 
 
 ```{r}
