@@ -24,31 +24,40 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Overview{.tabset .tabset-pills}
 ### Overview
 
-**ENVIROFACTS EPA Public API to obtain data**
-Envirofacts has developed a RESTful data service API to all of its internal data holdings. This functionality provides a user of Envirofacts with the ability to query any table through the use of a URL. The default output is in XML, which can be utilized in other applications, as well as tools such as Microsoft Excel or Access. 
+**OBTAINING DRINKING WATER DATA FROM THE ENVIRONMENTAL PROTECTION AGENCY - EPA**
+
+****
+
+Water is an essential factor for the whole life and the human survival and, having an important role for both drinking as well economic sectors. Therefore, protecting this source against any pollution has become necessary (Witek and Jarosiewicz, 2009, Reza and Singh, 2010; Sojobi, 2016). In the last century, the availability and quality of surface or ground waters have been changing, mainly due to urbanization, industrialization etc.
 
 ![EPA](images/Drinking_water.png)
 
+**Using ENVIROFACTS -  API**
+
 **SDWIS - Safe Drinking Water Information System**
 
-Information about safe drinking water is stored in SDWIS, the EPA's Safe Drinking Water Information System. SDWIS tracks information on drinking water contamination levels as required by the 1974 Safe Drinking Water Act and its 1986 and 1996 amendments. The Safe Drinking Water Act (SDWA) and accompanying regulations establish Maximum Contaminant Levels (MCLs), treatment techniques, and monitoring and reporting requirements to ensure that water provided to customers is safe for human consumption. The Safe Drinking Water Information System (SDWIS) contains information about public water systems and their violations of EPA's drinking water regulations. Searching SDWIS will allow you to locate your drinking water supplier and view its violations and enforcement history for the last ten years.
+****
 
-![](images/sdwis.PNG)
+Information about safe drinking water is stored in SDWIS, the EPA's Safe Drinking Water Information System. SDWIS tracks information on drinking water contamination levels as required by the 1974 Safe Drinking Water Act and its 1986 and 1996 amendments. The Safe Drinking Water Act (SDWA) and accompanying regulations establish Maximum Contaminant Levels (MCLs), treatment techniques, and monitoring and reporting requirements to ensure that water provided to customers is safe for human consumption. 
+
+![Map of tables available in SDWIS](images/sdwis.PNG)
+
+****
 
 **UCMR - Unregulated Contaminant Monitoring Rule**
+
+****
 
 EPA collects data for chemicals and microbes that may be present in drinking water, but are not currently subject to EPA drinking water regulations.
 
 The UCMR program was developed in coordination with the Contaminant Candidate List (CCL) a list of contaminants that:
 
-Are not regulated by the National Primary Drinking Water Regulations
-Are known or anticipated to occur at public water systems
-May warrant regulation under the SDWA
+- Are not regulated by the National Primary Drinking Water Regulations
 
-What are the public health benefits of UCMR?
-This permits assessment of the population being exposed and the levels of exposure.
+- Are known or anticipated to occur at public water systems
 
-UCMR data represent one of the primary sources of national occurrence data in drinking water that EPA uses to inform regulatory and other risk management decisions for drinking water contaminant candidates.
+- May warrant regulation under the SDWA
+
 
 ![](images/UCMR.PNG)
 
@@ -78,7 +87,11 @@ set.seed(1234)
 
 **Dataset # 1 - Using API**
 
+****
+
 Safe Drinking Water Information System (SDWIS)
+
+The Safe Drinking Water Information System (SDWIS) contains information about public water systems and their violations of EPA's drinking water regulations. Searching SDWIS will allow you to locate your drinking water supplier and view its violations and enforcement history for the last ten years.
 
 ![](Images/Drinking_water.png)
 
@@ -98,13 +111,14 @@ api_data <- read_csv("data/EnvirofactsRestAP_violations.csv")
 
 ##### EPA_data
 
-**Dataset # 2 - Csv** 
+**Dataset # 2 - UCMR.Csv** 
 
-National Contaminant Occurrence Database (NCOD)
+****
 
-EPA developed the National Contaminant Occurrence Database (NCOD) to satisfy statutory requirements in the 1996 Amendments to the Safe Drinking Water Act (SDWA). 
+What are the public health benefits of UCMR?
+This permits assessment of the population being exposed and the levels of exposure.
 
-The 1996 Amendments require EPA to assemble and maintain a national drinking water contaminant occurrence database using information for both regulated and unregulated contaminants in public water systems.
+UCMR data represent one of the primary sources of national occurrence data in drinking water that EPA uses to inform regulatory and other risk management decisions for drinking water contaminant candidates.
 
 ![](Images/water-testing-1020x510.jpg)
 
@@ -120,6 +134,9 @@ names(water_data)
 ##### Exploratory Analysis
 
 **Dataset 1 - APi Data**
+
+****
+
 
 ```{r api water, eval=FALSE}
 library(dplyr)
@@ -165,8 +182,9 @@ library(ggplot2)
 ```
 
 
+**Dataset 2 - Contaminant Monitoring UCMR**
 
-**Dataset 2 - Epa Water**
+****
 
 ```{r epa water, eval=FALSE}
 epa_water <- water_data %>% 
@@ -215,7 +233,7 @@ write_csv(epa_clean,"epa_clean.csv", col_names = TRUE)
 epa_clean <- read_csv("epa_clean.csv")
 ```
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, eval=FALSE}
 
 library(lubridate)
 
@@ -224,8 +242,12 @@ epa_clean <- epa_clean %>%
 
 ```
 
-```{r}
+```{r skim ucmr}
 
+library(skimr)
+library(ggplot2)
+
+ epa_clean %>% skim()
 ```
 
 ##### Relationships
@@ -233,6 +255,9 @@ epa_clean <- epa_clean %>%
 Correlation is a measure of the relationship or interdependence of two variables. In other words, how much do the values of one variable change with the values of another. Correlation can be either positive or negative and it ranges from -1 to 1, with 1 and -1 indicating perfect correlation (1 being positive and -1 being negative) and 0 indicating no correlation.
 
 **Dataset 1 - APi Data**
+
+****
+
 
 ```{r analytics, warning=FALSE, message=FALSE}
 
@@ -262,7 +287,11 @@ api_clean2 %>%
   ggpairs()
 ```
 
+****
+
 **Dataset 2 - APi Data**
+
+****
 
 ```{r analytics2, warning=FALSE, message=FALSE}
 
@@ -294,15 +323,52 @@ epa_clean %>%
 
 ##### Contaminants
 
-**Definition**
+**MOST RECENT REGULATED contaminants by the EPA**
 
-The Safe Drinking Water Act (SDWA) defines "contaminant" as any physical, chemical, biological or radiological substance or matter in water. Drinking water may reasonably be expected to contain at least small amounts of some contaminants. Some contaminants may be harmful if consumed at certain levels in drinking water. The presence of contaminants does not necessarily indicate that the water poses a health risk.
+****
 
-```{r contaminants}
+![](images/Regulated Contaminants.PNG)
 
+[Regulated contaminants](https://www.epa.gov/sites/production/files/2015-10/documents/dw_regulation_timeline.pdf)
+
+****
+
+**REGULATED CONTAMINANTS VIOLATIONS - States with levels higher than the  Maximum Concentration Levels**
+
+****
+
+```{r, message=FALSE, warning=FALSE}
+
+library(ggplot2)
+
+ggplot(api_clean2) +
+ aes(x = State_MCL, size = Result_value) +
+ geom_histogram(bins = 30L, fill = "#FF8C00") +
+ scale_x_continuous(trans = "log10") +
+ theme_minimal() +
+ facet_wrap(vars(State))
 
 ```
 
+****
+
+**UNREGULATED CONTAMINANTS -  > Maximum Concentration Levels (MCL) by State**
+
+****
+
+The Safe Drinking Water Act (SDWA) defines "contaminant" as any physical, chemical, biological or radiological substance or matter in water. Drinking water may reasonably be expected to contain at least small amounts of some contaminants. Some contaminants may be harmful if consumed at certain levels in drinking water. The presence of contaminants does not necessarily indicate that the water poses a health risk.
+
+```{r contaminants, echo=FALSE, message=FALSE, warning=FALSE}
+library(readr)
+epa_clean2 <- read_csv("data/UCMR 4_Data Summary.csv", 
+    na = "NA")
+
+```
+
+```{r epa clean 2, warning=FALSE, message=FALSE}
+library(DT)
+datatable(epa_clean2)
+```
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -319,105 +385,186 @@ ggplot(epa_clean) +
 [](images/Contaminants_states.png)
 
 
-##### Research Question
+##### Methods
+
+I obtained detailed information about public water systems was gathered from the U.S. EPA’s Safe Drinking Water Information System (SDWIS) number of people served, source water type (groundwater or surface water)CWS system sizes were classified using categories defined by the EPA: very small (≤500 people); small (501–3300); medium (3301–10,000); large (10,001–100,000); and very large (>100,000)
+
+I obtained unregulated contaminant names, Maximum Regulated Levels, total number of result above the MRL, Number of PWS with results above Reference Concentration, % of PWSs with results above Reference Concentration.
+
+**Identifiying States of interest**
+
+***
+
+```{r}
+ggplot(epa_clean) +
+ aes(x = Date, fill = Contaminant) +
+ geom_histogram(bins = 30L) +
+ scale_fill_hue(direction = 1) +
+ labs(subtitle = "Contaminants per State") +
+ theme_minimal() +
+ facet_wrap(vars(State))
+```
 
 
-```{r research}
+**Violations**
 
-# lets take a look at the data 
+using the Public Api, I was able to identify 100K violations in Region 2 of the EPA database. Region 2 includes 34 states, among them TX, NY, NJ, NC, UT. UCMR provided the counties served field for 99% of the PWSs. (n=100,002) but only 26% reported information without any NA's (n= 3837) 
 
-
+```{r violations nyc}
+api_clean2 %>% 
+  filter(State == "NY") %>% 
+  summarise(Avg_ppl_affected = mean(Pop_served))
 
 ```
 
-```{r research2}
 
+**Unregulated Contaminants**
 
-```
+Using the city served and county served fields in UCMR to determine the areas with reports of unregulated contaminants by each PWS. From the 500k entries found we were able to gather 15,527 with no missing values.
 
-#### {-}
+When we filter by State = NY we can see that there are 1369 reports stating levels of unregulated contaminants above the MRL (max result value)
 
-### Inference
-
-
-```{r inference}
+```{r, eval=FALSE}
 library(dplyr)
-
+count(epa_clean$State == "NY")
 ```
 
 
-#### Model
+```{r non reg contaminants mu nyc}
 
+#average mu of contaminant Reporting Levels
 
-```{r levels, warning=FALSE, message=FALSE}
-
+epa_clean %>% 
+  select(State, MRL) %>% 
+  filter(State == "NY") %>% 
+  group_by(State) %>% 
+  summarise(Average_MRL = mean(MRL))
 ```
-
-```{r train}
-
-```
-
-```{r test}
-
-```
-
-**Recipes Package**
-
-Recipes allows to create a specification of preprocessing steps we want to perform.
-
-```{r recipes}
-
-
-```
-
-**Text Recipes**
-
-
-
-```{r tokenize,  warning=FALSE}
-
-library(textrecipes)
-```
-
-```{r workflow}
-
-```
-
-```{r discrim, warning=FALSE, message=FALSE}
-
-library(discrim)
-
-```
-
-#### Conclusion
-
 
 ```{r}
 
 ```
 
-**resampling estimates of performance**
 
-```{r resampling estimates}
+#### {-}
 
+### Inference
+
+**Statistical Anaysis**
+
+![](images/NYC water.PNG)
+
+***
+
+**Null Hypothesis**
+
+***
+
+  NYC has one of the best water in the world, we should drink tap water.
+  Reason why there is no difference in mean between the MRL (Max Reported levels) and the Violation reported mean Results and the Non regulated Contaminant Mean concentration Levels MCL.
+
+***
+
+**Alternate Hypothesis**
+
+***
+
+Due to increase in population,industrialization,  poor environmental policies and lack of accurate and continuous monitoring, NYC tap water is not the best in the world and it should be filtered before consumption. There is a significant difference in mean between the accepted levels of contaminants in water and the concentration levels observed in the reported violations
+
+***
+
+We will investigate NYC
+
+```{r stats mean mrl}
+
+# lets take a look at the data 
+
+df1 <- epa_clean %>% 
+  select(State, MRL) %>% 
+  filter(State == "NY" |
+           State == "TX")
 
 ```
 
-```{r model fitting, eval=FALSE}
+```{r}
 
-library(naivebayes)
+# Looking for Average Result Value / above State concentration levels
+
+epa_clean %>% 
+  select(State, Result_value) %>% 
+  filter(State == "NY" |
+           State == "TX") %>% 
+  group_by(State) %>% 
+  summarise(Average_RV = mean(Result_value))
+```
+
+```{r stats mean result value }
+df2 <- epa_clean %>% 
+  select(State, Result_value) %>% 
+  filter(State == "NY" |
+           State == "TX")
+```
+
+***
+
+**1 sample T-test**
+
+***
+
+I will test whether the  average MCL/ MRL levels for contaminants in NYC and TX abides with the National standard of 0.3 ug/l.
+
+To do so we make use of the MRL ( max reporting level ) giving the amount allowed to be reported by the EPA and then we use the Result value variable which tells us the amount above the MCL
+
+```{r}
+hist(log(df1$MRL))
+```
+
+```{r}
+hist(log(df2$Result_value))
+```
+
+
+```{r t test df1, message=FALSE, warning=FALSE, echo=FALSE}
+library(infer)
+df1 %>% 
+  specify(response = MRL) %>% 
+  hypothesize(null = "point", mu = 0.4) %>% 
+  calculate(stat = "t")
 
 ```
 
-```{r collect metrics, eval=FALSE}
+```{r t test df2}
+df2 %>% 
+  specify(response = Result_value) %>% 
+  hypothesize(null = "point", mu = 0.4) %>% 
+  calculate(stat = "t")
+```
+
+Hypothesis for Violation Data - api_clean2
+
+```{r recipes}
+t.test(api_clean2$Result_value,
+       mu = 0.4,
+       alternative = "greater")
 
 ```
 
-```{r performance metrics, eval=FALSE}
+Hypothesis for Unregulated Contaminant Data - epa_clean
 
+```{r}
+t.test(epa_clean$Result_value,
+       mu = 0.4,
+       alternative = "greater")
 ```
 
-```{r, eval=FALSE}
 
-```
+### Conclusion
+
+![](images/t_test.PNG)
+
+
+We reject the Null Hypothesis, there is significant evidence to believe NYC water is not safe for consumption without being filtered first.
+
+
+
 
