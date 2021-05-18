@@ -106,7 +106,6 @@ library(readr)
 api_data <- read_csv("data/EnvirofactsRestAP_violations.csv")
 
 
-
 ```
 
 ##### EPA_data
@@ -258,7 +257,6 @@ Correlation is a measure of the relationship or interdependence of two variables
 
 ****
 
-
 ```{r analytics, warning=FALSE, message=FALSE}
 
 library(PerformanceAnalytics)
@@ -387,9 +385,6 @@ ggplot(epa_clean) +
 
 ##### Methods
 
-I obtained detailed information about public water systems was gathered from the U.S. EPA’s Safe Drinking Water Information System (SDWIS) number of people served, source water type (groundwater or surface water)CWS system sizes were classified using categories defined by the EPA: very small (≤500 people); small (501–3300); medium (3301–10,000); large (10,001–100,000); and very large (>100,000)
-
-I obtained unregulated contaminant names, Maximum Regulated Levels, total number of result above the MRL, Number of PWS with results above Reference Concentration, % of PWSs with results above Reference Concentration.
 
 **Identifiying States of interest**
 
@@ -441,8 +436,81 @@ epa_clean %>%
   summarise(Average_MRL = mean(MRL))
 ```
 
+***
+
+**sampling**
+
+***
+
+Create a new variable df1 using the dataset_1 - Violations - epa_clean  -  filtering the States of interest
+
+```{r sampling methods}
+df1 <- epa_clean %>% 
+  select(State, MRL) %>% 
+  filter(State == "NY" |
+           State == "TX")
+```
+
+sampling variable of df1
+
+```{r}
+df1_sampling <- df1 %>% 
+  rep_sample_n(size = 50)
+
+df1_sampling
+
+```
+
+Let’s compute the proportion of MRL meeting national average of 0.3 
+
+```{r}
+df1_sampling %>% 
+  mutate(is_avg_MRL = (MRL == 0.4))
+```
+
+```{r}
+df1_sampling %>% 
+  mutate(is_avg_MRL = (MRL == 0.4)) %>% 
+  summarize(nat_avg = sum(is_avg_MRL))
+```
+
+let’s compute the proportion of the 50 sampled entries that are MRL= 0.4 by dividing nat_avg by 50
+
 ```{r}
 
+df1_sampling %>% 
+  mutate(is_avg_MRL = (MRL == 0.4)) %>% 
+  summarize(nat_avg = sum(is_avg_MRL)) %>% 
+  mutate(prop_avg_MRL = nat_avg / 50)
+
+```
+
+***
+
+**Great! 78% of df1_sampling Maximum Regulated Levels is 0.4**
+
+***
+
+**Bootstrapping**
+
+***
+
+```{r}
+# Repeat resampling 1000 times
+
+# Compute 1000 sample means
+
+virtual_resampled_means <- df1 %>% 
+  rep_sample_n(size = 50, replace = TRUE, reps = 1000) %>% 
+  group_by(replicate) %>% 
+  summarize(mean_MRL = mean(MRL))
+virtual_resampled_means
+```
+
+```{r}
+ggplot(virtual_resampled_means, aes(x = mean_MRL)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "sample mean")
 ```
 
 
@@ -475,7 +543,7 @@ Due to increase in population,industrialization,  poor environmental policies an
 
 We will investigate NYC
 
-```{r stats mean mrl}
+```{r stats mean mrl, eval=FALSE}
 
 # lets take a look at the data 
 
